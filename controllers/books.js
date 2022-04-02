@@ -1,6 +1,6 @@
 const Books = require("../model/books");
+const genre = require("../model/genre");
 const Genre = require("../model/genre");
-const genreUpdate = require("./genreFunciton");
 
 const getAllBooks = async (req, res) => {
     try {
@@ -9,19 +9,22 @@ const getAllBooks = async (req, res) => {
         const { name, description, author, sort, genre } = req.query;
 
         if (name) {
-            bookObject.name = { $regex: name, $options: "i" };
+
+            bookObject.name = { $regex: data, $options: "i" };
         }
         if (description) {
+
             bookObject.description = { $regex: description, $options: "i" };
         }
         if (genre) {
-            bookObject.genre = genre;
+            bookObject.genre = {$regex: genre, $options: "i"};
         }
-        const message = genreUpdate(genre);
 
         if (author) {
-            bookObject.author = author;
+            bookObject.author = {$regex: author, $options: "i"};
         }
+
+
 
         let result = Books.find(bookObject);
 
@@ -36,7 +39,7 @@ const getAllBooks = async (req, res) => {
 
         res
             .status(200)
-            .json({ msg: "success", books, total: books.length, message });
+            .json({ msg: "success", books, total: books.length });
     } catch (error) {
         res.status(500).json({ msg: error });
     }
@@ -88,6 +91,34 @@ const addBook = async (req, res) => {
         }
 
         const newBook = await Books.create(req.body);
+
+        // if(genre.length>1){
+        //     const [firstgenre, secoundGenre]= genre.split(',')
+        //     console.log(firstgenre,secoundGenre)
+
+        //     let genreUpdate1=await Genre.findOne({name: firstgenre})
+
+        //     if(genreUpdate1){
+
+        //         if(genreUpdate1.genre!==firstgenre){
+        //             const newGenre= await Genre.create({name:firstgenre,counts:1});
+        //         }
+
+        //         const count=genreUpdate1.count;
+
+        //         let genreUpdate= await Genre.findOneAndUpdate({name:firstgenre},{counts:count+1},{new:true, runValidators:true})
+                
+        //     }
+        //     let genreUpdate2= await Genre.findOne({name:secoundGenre})
+        //     if(genreUpdate2){
+        //         const count= genreUpdate2.count;
+
+        //         let genreUpdate= await Genre.findOneAndUpdate({name:secoundGenre},{counts:count+1},{new:true, runValidators:true})
+        //     }
+            
+
+        // }
+
 
         if (newBook) {
             let updatedGenre = await Genre.findOne({ name: genre });
@@ -150,8 +181,6 @@ const updateBook = async (req, res) => {
                         );
                     }
 
-
-
                     const newGenre = await Genre.findOne({ name: genre });
 
                     if (!newGenre) {
@@ -167,7 +196,7 @@ const updateBook = async (req, res) => {
                 return res.status(200).json({
                     msg: "success",
                     updateBook,
-                    message: `${name} is added to ${genre}`,
+                    message: `${name} is updated, genre :${genre}`,
                 });
             }
 
@@ -217,4 +246,28 @@ const deleteBook = async (req, res) => {
     }
 };
 
-module.exports = { getBook, getAllBooks, addBook, updateBook, deleteBook };
+
+
+
+//GenreDB
+const getAllGenre=async (req,res)=>{
+    try {
+        
+        const data= await Genre.find();
+
+        console.log(data)
+
+        if(data){
+
+            return res.status(200).json({data, count: data.length});
+
+        }
+        res.status(401).json({ msg: "cannot find genre"});
+        
+    } catch (error) {
+        res.status(505).json({ msg:'uou' });
+    }
+}
+
+
+module.exports = { getBook, getAllBooks, addBook, updateBook, deleteBook , getAllGenre};

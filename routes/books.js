@@ -6,4 +6,5 @@ const{getAllBooks,getBook,addBook,deleteBook,updateBook}= require('../controller
 router.route('/').get(getAllBooks).post(addBook);
 router.route('/:id').get(getBook).patch(updateBook).delete(deleteBook);
 
+
 module.exports=router;
