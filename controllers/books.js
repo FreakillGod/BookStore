@@ -10,7 +10,7 @@ const getAllBooks = async (req, res) => {
 
         if (name) {
 
-            bookObject.name = { $regex: data, $options: "i" };
+            bookObject.name = { $regex: name, $options: "i" };
         }
         if (description) {
 
